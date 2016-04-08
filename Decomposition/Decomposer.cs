@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using static Constants; // ハングル関連の定数をインポート
 
 namespace Decomposition
 {
-    using static Constants; // ハングル関連の定数をインポート
-
     public class Decomposer
     {
         private readonly IReadOnlyDictionary<uint, DecompositionMapping> _decompositionTable;
@@ -29,7 +28,7 @@ namespace Decomposition
             var result = new List<uint>(input.Length * 2);
 
             // 分解
-            foreach (var c in result)
+            foreach (var c in input)
                 DecomposeCore(c, result, compatibility);
 
             // 並べ替え

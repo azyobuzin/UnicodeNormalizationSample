@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
-public static class StringUtils
+public static class Utils
 {
-    public static uint[] ToUtf32Array(string source)
+    public static uint[] ToUtf32Array(this string source)
     {
         var result = new uint[source.Length];
         var insertIndex = 0;
@@ -35,5 +36,19 @@ public static class StringUtils
             }
         }
         return sb.ToString();
+    }
+
+    public static bool ArrEq<T>(this T[] x, T[] y)
+    {
+        if (x.Length != y.Length) return false;
+
+        var comp = EqualityComparer<T>.Default;
+        for (var i = 0; i < x.Length; i++)
+        {
+            if (!comp.Equals(x[i], y[i]))
+                return false;
+        }
+
+        return true;
     }
 }
