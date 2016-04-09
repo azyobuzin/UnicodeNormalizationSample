@@ -25,16 +25,18 @@ namespace Decomposition
         /// <param name="compatibility">互換分解するかどうか。</param>
         public uint[] Decompose(uint[] input, bool compatibility)
         {
-            var result = new List<uint>(input.Length * 2);
+            var buffer = new List<uint>(input.Length * 2);
 
             // 分解
             foreach (var c in input)
-                DecomposeCore(c, result, compatibility);
+                DecomposeCore(c, buffer, compatibility);
+
+            var result = buffer.ToArray();
 
             // 並べ替え
             Reorder(result);
 
-            return result.ToArray();
+            return result;
         }
 
         /// <summary>1文字を分解します。</summary>
@@ -79,9 +81,9 @@ namespace Decomposition
 
         /// <summary>正規順序に並べ替えます。</summary>
         /// <param name="target">正規分解されたUTF-32文字列</param>
-        private void Reorder(List<uint> target)
+        private void Reorder(uint[] target)
         {
-            for (var i = 1; i < target.Count; i++)
+            for (var i = 1; i < target.Length; i++)
             {
                 var c = target[i];
                 var ccc = GetCanonicalCombiningClass(c);
@@ -94,9 +96,7 @@ namespace Decomposition
                         var jc = target[j];
                         var jccc = GetCanonicalCombiningClass(jc);
 
-                        // CCCが 0 だったら並べ替え終了
-                        if (jccc == 0 || jccc <= ccc)
-                            break;
+                        if (jccc <= ccc) break;
 
                         target[j + 1] = jc;
                         target[j] = c;
