@@ -7,8 +7,8 @@
     <ProjectGuid>{5C406EF4-2036-4B5C-847C-D093A03401C9}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Decomposition</RootNamespace>
-    <AssemblyName>Decomposition</AssemblyName>
+    <RootNamespace>BasicSample</RootNamespace>
+    <AssemblyName>BasicSample</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

@@ -2,7 +2,7 @@
 using System.Linq;
 using static Constants; // ハングル関連の定数をインポート
 
-namespace Decomposition
+namespace BasicSample
 {
     public class Decomposer
     {
