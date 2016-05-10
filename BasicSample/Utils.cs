@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 public static class Utils
@@ -36,6 +37,11 @@ public static class Utils
             }
         }
         return sb.ToString();
+    }
+
+    public static uint ParseCodePoint(string s)
+    {
+        return uint.Parse(s, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
     }
 
     public static bool ArrEq<T>(this T[] x, T[] y)

@@ -58,14 +58,14 @@ public class DecompositionMapping
             // 互換分解
             return new DecompositionMapping(
                 mapping[0].Substring(1, mapping[0].Length - 2), // < > を削除
-                mapping.Skip(1).Select(x => uint.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture)).ToArray()
+                mapping.Skip(1).Select(Utils.ParseCodePoint).ToArray()
             );
         }
 
         // 正規分解
         return new DecompositionMapping(
             null,
-            Array.ConvertAll(mapping, x => uint.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture))
+            Array.ConvertAll(mapping, Utils.ParseCodePoint)
         );
     }
 }
@@ -82,7 +82,7 @@ public static class UnicodeData
             {
                 var s = line.Split(';');
                 result.Add(new UnicodeDataRecord(
-                    uint.Parse(s[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+                    Utils.ParseCodePoint(s[0]),
                     int.Parse(s[3], CultureInfo.InvariantCulture),
                     DecompositionMapping.Parse(s[5])
                 ));

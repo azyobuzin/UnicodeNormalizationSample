@@ -35,7 +35,7 @@ static class NormalizationTest
                 if (line.Length == 0 || line[0] == '#' || line[0] == '@') continue;
                 var record = line.Split(';').Take(5)
                     .Select(s => s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(x => uint.Parse(x, NumberStyles.HexNumber, CultureInfo.InvariantCulture))
+                        .Select(Utils.ParseCodePoint)
                         .ToArray()
                     )
                     .ToArray();
