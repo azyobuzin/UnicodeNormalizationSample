@@ -1,25 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using static Constants; // ハングル関連の定数をインポート
 
 namespace BasicSample
 {
-    public class Decomposer
+    // 合成・分解共通の処理は Normalizer.cs へ
+    partial class Normalizer
     {
-        private readonly IReadOnlyDictionary<uint, DecompositionMapping> _decompositionTable;
-        private readonly IReadOnlyDictionary<uint, int> _canonicalCombiningClassTable;
-
-        public Decomposer(UnicodeDataRecord[] data)
-        {
-            // 分解テーブル
-            _decompositionTable = data.Where(x => x.DecompositionMapping != null)
-                .ToDictionary(x => x.CodePoint, x => x.DecompositionMapping);
-
-            // CCCテーブル
-            _canonicalCombiningClassTable = data.Where(x => x.CanonicalCombiningClass != 0)
-                .ToDictionary(x => x.CodePoint, x => x.CanonicalCombiningClass);
-        }
-
         /// <summary>正規分解を行います。</summary>
         /// <param name="input">UTF-32でエンコードされた文字列。</param>
         /// <param name="compatibility">互換分解するかどうか。</param>
@@ -71,12 +56,6 @@ namespace BasicSample
                 // 分解できなければそのまま
                 dest.Add(c);
             }
-        }
-
-        private int GetCanonicalCombiningClass(uint c)
-        {
-            int ccc;
-            return _canonicalCombiningClassTable.TryGetValue(c, out ccc) ? ccc : 0;
         }
 
         /// <summary>正規順序に並べ替えます。</summary>

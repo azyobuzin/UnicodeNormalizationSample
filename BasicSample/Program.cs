@@ -6,18 +6,18 @@ namespace BasicSample
     {
         static void Main(string[] args)
         {
-            var decomposer = new Decomposer(UnicodeData.Load("UnicodeData.txt"));
+            var norm = new Normalizer(UnicodeData.Load("UnicodeData.txt"));
             var tests = NormalizationTest.Load("NormalizationTest.txt");
 
-            TestNFD(decomposer, tests);
-            TestNFKD(decomposer, tests);
+            TestNFD(norm, tests);
+            TestNFKD(norm, tests);
 
             Console.ReadLine();
         }
 
-        static void TestNFD(Decomposer decomposer, NormalizationTestRecord[] tests)
+        static void TestNFD(Normalizer norm, NormalizationTestRecord[] tests)
         {
-            Func<uint[], uint[]> decomp = input => decomposer.Decompose(input, false);
+            Func<uint[], uint[]> decomp = input => norm.Decompose(input, false);
             var passed = 0;
             foreach (var test in tests)
             {
@@ -32,9 +32,9 @@ namespace BasicSample
             Console.WriteLine("NFD: {0} / {1}", passed, tests.Length);
         }
 
-        static void TestNFKD(Decomposer decomposer, NormalizationTestRecord[] tests)
+        static void TestNFKD(Normalizer norm, NormalizationTestRecord[] tests)
         {
-            Func<uint[], uint[]> decomp = input => decomposer.Decompose(input, true);
+            Func<uint[], uint[]> decomp = input => norm.Decompose(input, true);
             var passed = 0;
             foreach (var test in tests)
             {

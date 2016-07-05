@@ -37,8 +37,11 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants.cs" />
+    <Compile Include="CodePointPair.cs" />
+    <Compile Include="Composer.cs" />
     <Compile Include="Decomposer.cs" />
+    <Compile Include="NormalizationProps.cs" />
+    <Compile Include="Normalizer.cs" />
     <Compile Include="NormalizationTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -46,11 +49,14 @@
     <Compile Include="UnicodeData.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\UCD\8.0.0\NormalizationTest.txt">
+    <Content Include="..\UCD\9.0.0\DerivedNormalizationProps.txt">
+      <Link>DerivedNormalizationProps.txt</Link>
+    </Content>
+    <Content Include="..\UCD\9.0.0\NormalizationTest.txt">
       <Link>NormalizationTest.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\UCD\8.0.0\UnicodeData.txt">
+    <Content Include="..\UCD\9.0.0\UnicodeData.txt">
       <Link>UnicodeData.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
