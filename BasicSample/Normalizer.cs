@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BasicSample
 {
@@ -32,7 +29,7 @@ namespace BasicSample
             var fullCompositionExclusion = new HashSet<uint>(normalizationProps.FullCompositionExclusion);
             _compositionTable = unicodeData.Where(x => x.DecompositionMapping != null
                     && x.DecompositionMapping.Type == null // 互換分解でない
-                    && x.DecompositionMapping.Mapping.Length == 2 // 1文字の分解でない
+                    && x.DecompositionMapping.Mapping.Length == 2 // 1文字の分解でない -> 2文字
                     && !fullCompositionExclusion.Contains(x.CodePoint) // Full_Composition_Exclusion
                 ).ToDictionary(
                     x => new CodePointPair(x.DecompositionMapping.Mapping[0], x.DecompositionMapping.Mapping[1]),
