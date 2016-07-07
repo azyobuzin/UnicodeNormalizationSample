@@ -91,18 +91,17 @@ namespace BasicSample
                 // ここから通常の合成
                 var ccc = GetCanonicalCombiningClass(c);
 
-                if (ccc != 0 && lastCcc == ccc)
+                if (ccc == 0 ? lastCcc != 0 : lastCcc >= ccc)
                 {
-                    // ブロック条件 "ccc(B) >= ccc(C)"
-                    // 分解で並べ替えられているので ccc(B) > ccc(C) になることはない
+                    // ccc が 0 のとき → lastCcc != 0 ならばブロックされている
+                    // ccc が 0 でないとき → lastCcc >= ccc ならばブロックされている
                     buffer[insertIndex++] = c;
                     lastChar = c;
                     continue;
                 }
 
                 uint composed;
-                if ((ccc != 0 || lastCcc == 0) // ブロック条件より CCC 0 の連続は合成できる
-                    && _compositionTable.TryGetValue(new CodePointPair(lastStarter, c), out composed))
+                if (_compositionTable.TryGetValue(new CodePointPair(lastStarter, c), out composed))
                 {
                     buffer[lastStarterIndex] = composed;
                     lastStarter = composed;
