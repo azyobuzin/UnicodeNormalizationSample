@@ -106,7 +106,6 @@ namespace BasicSample
                 {
                     buffer[lastStarterIndex] = composed;
                     lastStarter = composed;
-                    ccc = 0; // TODO: あとでこれ消してみる
                 }
                 else
                 {
@@ -116,10 +115,10 @@ namespace BasicSample
                         lastStarterIndex = insertIndex;
                     }
                     buffer[insertIndex++] = c;
+                    lastCcc = ccc;
                 }
 
                 lastChar = c;
-                lastCcc = ccc;
             }
 
             Array.Resize(ref buffer, insertIndex);
