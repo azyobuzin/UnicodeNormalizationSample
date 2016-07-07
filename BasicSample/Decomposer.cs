@@ -1,10 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BasicSample
 {
     // 合成・分解共通の処理は Normalizer.cs へ
     partial class Normalizer
     {
+        /// <summary>分解テーブルを作成します。</summary>
+        /// <param name="unicodeData">UnicodeData.txt の内容</param>
+        private static IReadOnlyDictionary<uint, DecompositionMapping> CreateDecompositionTable(UnicodeDataRecord[] unicodeData)
+        {
+            return unicodeData.Where(x => x.DecompositionMapping != null)
+                .ToDictionary(x => x.CodePoint, x => x.DecompositionMapping);
+        }
+
         /// <summary>正規分解を行います。</summary>
         /// <param name="input">UTF-32でエンコードされた文字列。</param>
         /// <param name="compatibility">互換分解するかどうか。</param>

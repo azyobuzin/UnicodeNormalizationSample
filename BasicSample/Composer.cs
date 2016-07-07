@@ -1,10 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BasicSample
 {
     // 合成・分解共通の処理は Normalizer.cs へ
     partial class Normalizer
     {
+        /// <summary>合成テーブルを作成します。</summary>
+        /// <param name="unicodeData">UnicodeData.txt の内容</param>
+        /// <param name="normalizationProps">DerivedNormalizationProps.txt の内容</param>
+        private static IReadOnlyDictionary<CodePointPair, uint> CreateCompositionTable(UnicodeDataRecord[] unicodeData, NormalizationProps normalizationProps)
+        {
+            var fullCompositionExclusion = new HashSet<uint>(normalizationProps.FullCompositionExclusion);
+            return unicodeData.Where(x => x.DecompositionMapping != null
+                    && x.DecompositionMapping.Type == null // 互換分解でない
+                    && x.DecompositionMapping.Mapping.Length == 2 // 1文字の分解でない -> 2文字
+                    && !fullCompositionExclusion.Contains(x.CodePoint) // Full_Composition_Exclusion
+                ).ToDictionary(
+                    x => new CodePointPair(x.DecompositionMapping.Mapping[0], x.DecompositionMapping.Mapping[1]),
+                    x => x.CodePoint
+                );
+        }
+
         /// <summary>正規合成を行います。</summary>
         /// <param name="input">UTF-32でエンコードされた文字列。</param>
         /// <param name="compatibility">互換分解するかどうか。</param>
