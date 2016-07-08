@@ -114,10 +114,9 @@ namespace BasicSample
                         lastStarterIndex = insertIndex;
                     }
                     buffer[insertIndex++] = c;
+                    lastChar = c;
                     lastCcc = ccc;
                 }
-
-                lastChar = c;
             }
 
             Array.Resize(ref buffer, insertIndex);
