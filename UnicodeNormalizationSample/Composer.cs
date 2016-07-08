@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BasicSample
+namespace UnicodeNormalizationSample
 {
     // 合成・分解共通の処理は Normalizer.cs へ
     partial class Normalizer

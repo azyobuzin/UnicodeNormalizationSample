@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BasicSample
+namespace UnicodeNormalizationSample
 {
     struct CodePointPair : IEquatable<CodePointPair>
     {

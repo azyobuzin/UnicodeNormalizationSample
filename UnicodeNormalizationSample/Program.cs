@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BasicSample
+namespace UnicodeNormalizationSample
 {
     class Program
     {
@@ -16,6 +16,8 @@ namespace BasicSample
             TestNFKD(norm, tests);
             TestNFC(norm, tests);
             TestNFKC(norm, tests);
+            TestOptimizedNFC(norm, tests);
+            TestOptimizedNFKC(norm, tests);
         }
 
         static void TestNFD(Normalizer norm, NormalizationTestRecord[] tests)
@@ -82,6 +84,39 @@ namespace BasicSample
                 }
             }
             Console.WriteLine("NFKC: {0} / {1}", passed, tests.Length);
+        }
+
+        static void TestOptimizedNFC(Normalizer norm, NormalizationTestRecord[] tests)
+        {
+            Func<uint[], uint[], bool> test = (input, expected) => norm.ComposeOptimized(input, false).ArrEq(expected);
+            var passed = 0;
+            foreach (var testCase in tests)
+            {
+                // c2 == toNFC(c1) == toNFC(c2) == toNFC(c3)
+                // c4 == toNFC(c4) == toNFC(c5)
+                if (test(testCase.C1, testCase.C2) && test(testCase.C2, testCase.C2) && test(testCase.C3, testCase.C2)
+                    && test(testCase.C4, testCase.C4) && test(testCase.C5, testCase.C4))
+                {
+                    passed++;
+                }
+            }
+            Console.WriteLine("Optimized NFC: {0} / {1}", passed, tests.Length);
+        }
+
+        static void TestOptimizedNFKC(Normalizer norm, NormalizationTestRecord[] tests)
+        {
+            Func<uint[], uint[], bool> test = (input, expected) => norm.ComposeOptimized(input, true).ArrEq(expected);
+            var passed = 0;
+            foreach (var testCase in tests)
+            {
+                // c4 == toNFKC(c1) == toNFKC(c2) == toNFKC(c3) == toNFKC(c4) == toNFKC(c5)
+                if (test(testCase.C1, testCase.C4) && test(testCase.C2, testCase.C4) && test(testCase.C3, testCase.C4)
+                    && test(testCase.C4, testCase.C4) && test(testCase.C5, testCase.C4))
+                {
+                    passed++;
+                }
+            }
+            Console.WriteLine("Optimized NFKC: {0} / {1}", passed, tests.Length);
         }
     }
 }

@@ -7,8 +7,8 @@
     <ProjectGuid>{5C406EF4-2036-4B5C-847C-D093A03401C9}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BasicSample</RootNamespace>
-    <AssemblyName>BasicSample</AssemblyName>
+    <RootNamespace>UnicodeNormalizationSample</RootNamespace>
+    <AssemblyName>UnicodeNormalizationSample</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -43,8 +43,10 @@
     <Compile Include="NormalizationProps.cs" />
     <Compile Include="Normalizer.cs" />
     <Compile Include="NormalizationTest.cs" />
+    <Compile Include="OptimizedComposer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuickCheckValue.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="UnicodeData.cs" />
   </ItemGroup>

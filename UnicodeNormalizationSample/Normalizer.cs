@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace BasicSample
+namespace UnicodeNormalizationSample
 {
     public partial class Normalizer
     {
@@ -14,18 +14,22 @@ namespace BasicSample
         private readonly IReadOnlyDictionary<uint, int> _canonicalCombiningClassTable;
         private readonly IReadOnlyDictionary<uint, DecompositionMapping> _decompositionTable;
         private readonly IReadOnlyDictionary<CodePointPair, uint> _compositionTable;
+        private readonly IReadOnlyDictionary<uint, int> _quickCheckTable;
 
         public Normalizer(UnicodeDataRecord[] unicodeData, NormalizationProps normalizationProps)
         {
-            // CCCテーブル
+            // CCCテーブル (共通)
             _canonicalCombiningClassTable = unicodeData.Where(x => x.CanonicalCombiningClass != 0)
                 .ToDictionary(x => x.CodePoint, x => x.CanonicalCombiningClass);
 
-            // 分解テーブル
+            // 分解テーブル (Decomposer)
             _decompositionTable = CreateDecompositionTable(unicodeData);
 
-            // 合成テーブル
+            // 合成テーブル (Composer, OptimizedComposer)
             _compositionTable = CreateCompositionTable(unicodeData, normalizationProps);
+
+            // クイックチェックテーブル (OptimizedComposer)
+            _quickCheckTable = CreateQuickCheckTable(unicodeData, normalizationProps);
         }
 
         private int GetCanonicalCombiningClass(uint c)
