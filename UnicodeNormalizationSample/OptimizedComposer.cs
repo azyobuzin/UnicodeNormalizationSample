@@ -177,21 +177,18 @@ namespace UnicodeNormalizationSample
 
             var inputIndex = startIndex;
 
-            if (startIndex == 0)
+            // 最初の starter を探す
+            while (true)
             {
-                // 最初の starter を探す
-                while (true)
+                var c = buffer[inputIndex];
+                if (GetCanonicalCombiningClass(c) == 0)
                 {
-                    var c = buffer[inputIndex];
-                    if (GetCanonicalCombiningClass(c) == 0)
-                    {
-                        lastStarter = c;
-                        lastStarterIndex = inputIndex++;
-                        break;
-                    }
-
-                    if (++inputIndex >= buffer.Count) return; // 合成できないので終了
+                    lastStarter = c;
+                    lastStarterIndex = inputIndex++;
+                    break;
                 }
+
+                if (++inputIndex >= buffer.Count) return; // 合成できないので終了
             }
 
             var insertIndex = inputIndex;
@@ -232,17 +229,9 @@ namespace UnicodeNormalizationSample
                 // ここから通常の合成
                 var ccc = GetCanonicalCombiningClass(c);
 
-                if (ccc == 0 ? lastCcc != 0 : lastCcc >= ccc)
-                {
-                    // ccc が 0 のとき → lastCcc != 0 ならばブロックされている
-                    // ccc が 0 でないとき → lastCcc >= ccc ならばブロックされている
-                    buffer[insertIndex++] = c;
-                    lastChar = c;
-                    continue;
-                }
-
                 uint composed;
-                if (_compositionTable.TryGetValue(new CodePointPair(lastStarter, c), out composed))
+                if ((ccc == 0 ? lastCcc == 0 : lastCcc < ccc) // ブロック条件
+                    && _compositionTable.TryGetValue(new CodePointPair(lastStarter, c), out composed))
                 {
                     buffer[lastStarterIndex] = composed;
                     lastStarter = composed;
