@@ -6,30 +6,16 @@ namespace UnicodeNormalizationSample
     // 合成・分解共通の処理は Normalizer.cs へ
     partial class Normalizer
     {
-        /// <summary>クイックチェック用のテーブルを作成します。</summary>
+        /// <summary>合成のクイックチェック用CCCテーブルを作成します。</summary>
         /// <param name="unicodeData">UnicodeData.txt の内容</param>
         /// <param name="normalizationProps">DerivedNormalizationProps.txt の内容</param>
-        /// <returns>Key: コードポイント, Value: NFC_QCがNかMなら1、NFKC_QCがNかMなら2</returns>
-        private static IReadOnlyDictionary<uint, int> CreateQuickCheckTable(UnicodeDataRecord[] unicodeData, NormalizationProps normalizationProps)
+        /// <returns>Key: コードポイント, Value: CCC または、 NFC_QCがNかMなら255、NFKC_QCがNかMなら256</returns>
+        private static IReadOnlyDictionary<uint, int> CreateCompositionQuickCheckTable(UnicodeDataRecord[] unicodeData, NormalizationProps normalizationProps)
         {
-            var table = new Dictionary<uint, int>();
-
-            // NFKC_QC のデータを投入
-            foreach (var x in normalizationProps.NfkcQC.Keys)
-                table[x] = 2;
-
-            // NFC_QC のデータを投入
-            foreach (var x in normalizationProps.NfcQC.Keys)
-                table[x] = 1;
-
-            // CCC が 0 でないものは NFC_QC = M として扱う
-            foreach (var x in unicodeData)
-            {
-                if (x.CanonicalCombiningClass != 0)
-                    table[x.CodePoint] = 1;
-            }
-
-            return table;
+            return unicodeData.Where(x => x.CanonicalCombiningClass != 0).Where(x => !normalizationProps.NfcQC.ContainsKey(x.CodePoint)).Select(x => new { x.CodePoint, Ccc = x.CanonicalCombiningClass }) // CCC
+                .Concat(normalizationProps.NfcQC.Select(x => new { CodePoint = x.Key, Ccc = 255 })) // NFC_QC
+                .Concat(normalizationProps.NfkcQC.Where(x => !normalizationProps.NfcQC.ContainsKey(x.Key)).Select(x => new { CodePoint = x.Key, Ccc = 256 })) // NFKC_QC
+                .ToDictionary(x => x.CodePoint, x => x.Ccc);
         }
 
         /// <summary>正規合成を行います。</summary>
@@ -54,7 +40,7 @@ namespace UnicodeNormalizationSample
 
                 if (nextQcYes == input.Length) break; // 最後まで処理した
 
-                startIndex = IndexToStartCompose(input, nextQcYes + 1, compatibility);
+                startIndex = IndexToStartCompose(input, nextQcYes, compatibility);
 
                 var len = startIndex - nextQcYes;
                 if (len > 0)
@@ -73,11 +59,38 @@ namespace UnicodeNormalizationSample
         /// </summary>
         private int IndexToStartCompose(uint[] input, int startIndex, bool compatibility)
         {
+            var indexOfLastCccZero = startIndex;
+            var lastCcc = 0;
             for (var i = startIndex; i < input.Length; i++)
             {
-                int qcValue;
-                if (_quickCheckTable.TryGetValue(input[i], out qcValue) && (compatibility || qcValue == 1))
-                    return i == 0 ? 0 : i - 1;
+                int ccc;
+                if (_compositionQuickCheckTable.TryGetValue(input[i], out ccc))
+                {
+                    if (ccc == 255)
+                    {
+                        return indexOfLastCccZero; // NFC_QC = N or M
+                    }
+                    else if (ccc == 256)
+                    {
+                        if (compatibility)
+                            return indexOfLastCccZero; // NFKC_QC = N or M
+
+                        indexOfLastCccZero = i;
+                        lastCcc = 0;
+                    }
+                    else
+                    {
+                        if (lastCcc > ccc)
+                            return indexOfLastCccZero; // 正規順序違反
+
+                        lastCcc = ccc;
+                    }
+                }
+                else
+                {
+                    indexOfLastCccZero = i;
+                    lastCcc = 0;
+                }
             }
 
             return input.Length;
@@ -86,10 +99,11 @@ namespace UnicodeNormalizationSample
         /// <summary>正規化を終了するべきインデックスを取得します。</summary>
         private int FindNextQcYes(uint[] input, int startIndex, bool compatibility)
         {
+            // CCC = 0 かつ QC = Y を見つけたら、そのインデックスを返す
             for (var i = startIndex; i < input.Length; i++)
             {
-                int qcValue;
-                if (!_quickCheckTable.TryGetValue(input[i], out qcValue) || (!compatibility && qcValue == 2))
+                int ccc;
+                if (!_compositionQuickCheckTable.TryGetValue(input[i], out ccc) || (!compatibility && ccc == 256))
                     return i;
             }
 

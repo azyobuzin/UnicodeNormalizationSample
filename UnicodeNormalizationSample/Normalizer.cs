@@ -14,7 +14,7 @@ namespace UnicodeNormalizationSample
         private readonly IReadOnlyDictionary<uint, int> _canonicalCombiningClassTable;
         private readonly IReadOnlyDictionary<uint, DecompositionMapping> _decompositionTable;
         private readonly IReadOnlyDictionary<CodePointPair, uint> _compositionTable;
-        private readonly IReadOnlyDictionary<uint, int> _quickCheckTable;
+        private readonly IReadOnlyDictionary<uint, int> _compositionQuickCheckTable;
 
         public Normalizer(UnicodeDataRecord[] unicodeData, NormalizationProps normalizationProps)
         {
@@ -29,7 +29,7 @@ namespace UnicodeNormalizationSample
             _compositionTable = CreateCompositionTable(unicodeData, normalizationProps);
 
             // クイックチェックテーブル (OptimizedComposer)
-            _quickCheckTable = CreateQuickCheckTable(unicodeData, normalizationProps);
+            _compositionQuickCheckTable = CreateCompositionQuickCheckTable(unicodeData, normalizationProps);
         }
 
         private int GetCanonicalCombiningClass(uint c)
