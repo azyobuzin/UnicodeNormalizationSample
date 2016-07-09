@@ -50,10 +50,6 @@ namespace UnicodeNormalizationSample
                 var countBeforeDecomposition = buffer.Count;
 
                 DecomposeInRange(input, startIndex, nextQcYes, buffer, compatibility);
-                var x = buffer.ToArray();
-                Reorder(x);
-                if (!x.SequenceEqual(buffer))
-                    System.Diagnostics.Debugger.Break();
                 ComposeInRange(buffer, countBeforeDecomposition);
 
                 if (nextQcYes == input.Length) break; // 最後まで処理した

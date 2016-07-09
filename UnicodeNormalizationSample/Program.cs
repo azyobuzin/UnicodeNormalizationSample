@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace UnicodeNormalizationSample
 {
@@ -18,6 +19,8 @@ namespace UnicodeNormalizationSample
             TestNFKC(norm, tests);
             TestOptimizedNFC(norm, tests);
             TestOptimizedNFKC(norm, tests);
+            BenchNFC(norm, tests);
+            BenchOptimizedNFC(norm, tests);
         }
 
         static void TestNFD(Normalizer norm, NormalizationTestRecord[] tests)
@@ -117,6 +120,42 @@ namespace UnicodeNormalizationSample
                 }
             }
             Console.WriteLine("Optimized NFKC: {0} / {1}", passed, tests.Length);
+        }
+
+        static void BenchNFC(Normalizer norm, NormalizationTestRecord[] tests)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            for (var i = 0; i < 100; i++)
+            {
+                foreach (var testCase in tests)
+                {
+                    norm.Compose(testCase.C1, false);
+                    norm.Compose(testCase.C2, false);
+                    norm.Compose(testCase.C3, false);
+                    norm.Compose(testCase.C4, false);
+                    norm.Compose(testCase.C5, false);
+                }
+            }
+            stopwatch.Stop();
+            Console.WriteLine("Bench NFC: {0}", stopwatch.Elapsed);
+        }
+
+        static void BenchOptimizedNFC(Normalizer norm, NormalizationTestRecord[] tests)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            for (var i = 0; i < 100; i++)
+            {
+                foreach (var testCase in tests)
+                {
+                    norm.ComposeOptimized(testCase.C1, false);
+                    norm.ComposeOptimized(testCase.C2, false);
+                    norm.ComposeOptimized(testCase.C3, false);
+                    norm.ComposeOptimized(testCase.C4, false);
+                    norm.ComposeOptimized(testCase.C5, false);
+                }
+            }
+            stopwatch.Stop();
+            Console.WriteLine("Bench Optimized NFC: {0}", stopwatch.Elapsed);
         }
     }
 }
